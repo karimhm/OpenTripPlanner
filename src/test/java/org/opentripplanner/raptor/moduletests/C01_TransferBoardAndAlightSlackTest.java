@@ -24,6 +24,7 @@ import org.opentripplanner.raptor.api.request.RaptorRequestBuilder;
 import org.opentripplanner.raptor.configure.RaptorConfig;
 import org.opentripplanner.raptor.moduletests.support.RaptorModuleTestCase;
 import org.opentripplanner.raptor.spi.DefaultSlackProvider;
+import org.opentripplanner.raptor.spi.UnknownPathString;
 
 /**
  * FEATURE UNDER TEST
@@ -75,9 +76,7 @@ public class C01_TransferBoardAndAlightSlackTest implements RaptorTestConstants 
   }
 
   static List<RaptorModuleTestCase> testCases() {
-    // TODO expMinDuration= walk 50s + Transit 1m20s + 1x transfer 1m + 2x board/alight slack 1m20s
-    //      = 4m30s
-
+    var expMinDuration = UnknownPathString.of("4m20s", 1);
     var expected =
       "Walk 30s ~ B " +
       "~ BUS R1 0:02:11 0:03:01 ~ C " +
@@ -87,10 +86,8 @@ public class C01_TransferBoardAndAlightSlackTest implements RaptorTestConstants 
 
     return RaptorModuleTestCase
       .of()
-      // TODO: 2x10s alight slack is ignored in forward search for min-duration
-      .add(TC_MIN_DURATION, "[0:00 0:04 4m 1tx]")
-      // TODO: 2x30s Board- and 1x1m transfer slack is ignored in reverse search for min-duration
-      .add(TC_MIN_DURATION_REV, "[0:26:40 0:30 3m20s 1tx]")
+      .add(TC_MIN_DURATION, expMinDuration.departureAt(T00_00))
+      .add(TC_MIN_DURATION_REV, expMinDuration.arrivalAt(T00_30))
       .add(standard(), PathUtils.withoutCost(expected))
       .add(multiCriteria(), expected)
       .build();

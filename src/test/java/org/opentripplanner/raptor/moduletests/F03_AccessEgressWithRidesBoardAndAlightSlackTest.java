@@ -25,6 +25,7 @@ import org.opentripplanner.raptor.api.request.RaptorRequestBuilder;
 import org.opentripplanner.raptor.configure.RaptorConfig;
 import org.opentripplanner.raptor.moduletests.support.RaptorModuleTestCase;
 import org.opentripplanner.raptor.spi.DefaultSlackProvider;
+import org.opentripplanner.raptor.spi.UnknownPathString;
 
 /**
  * FEATURE UNDER TEST
@@ -75,15 +76,14 @@ public class F03_AccessEgressWithRidesBoardAndAlightSlackTest implements RaptorT
   }
 
   static List<RaptorModuleTestCase> testCases() {
+    var expMinDuration = UnknownPathString.of("8m40s", 2);
     var path =
       "Flex+Walk 2m 1x ~ B ~ BUS R1 0:04 0:06 ~ C ~ Flex 2m 1x " +
       "[0:00:30 0:09:10 8m40s 2tx $1840]";
     return RaptorModuleTestCase
       .of()
-      // TODO - Alight slack is missing
-      .add(TC_MIN_DURATION, "[0:00 0:08:30 8m30s 2tx]")
-      // TODO - Board slack is missing
-      .add(TC_MIN_DURATION_REV, "[0:01:50 0:10 8m10s 2tx]")
+      .add(TC_MIN_DURATION, expMinDuration.departureAt(T00_00))
+      .add(TC_MIN_DURATION_REV, expMinDuration.arrivalAt(T00_10))
       .add(standard(), PathUtils.withoutCost(path))
       .add(multiCriteria(), path)
       .build();
