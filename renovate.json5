@@ -3,15 +3,16 @@
   "extends": [
     "config:base"
   ],
-  "enabledManagers": [
-    "maven",
-    "pip_requirements"
-  ],
   "prConcurrentLimit": 3,
   "labels": [
     "skip changelog"
   ],
   "rebaseWhen": "conflicted",
+  "enabledManagers": [
+    "npm",
+    "maven",
+    "pip_requirements"
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
